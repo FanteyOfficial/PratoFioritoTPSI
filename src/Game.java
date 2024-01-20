@@ -23,11 +23,15 @@ public class Game {
             for (int j=0; j<this.columns; j++) {
                 if (!checkMine(i, j)) {
                     int n = checkBounds(i, j);
-                    this.table[i][j] = (char) n;
+                    this.table[i][j] = Character.forDigit(n , 10);
                 }
             }
         }
 
+        this.printTable();
+    }
+
+    private void printTable() {
         for (int i = 0; i < table.length; i++) { //this equals to the row in our matrix.
             for (int j = 0; j < table[i].length; j++) { //this equals to the column in each row.
                 System.out.print(table[i][j] + " ");
