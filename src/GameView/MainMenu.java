@@ -1,4 +1,4 @@
-import GameView.GameWindow;
+package GameView;
 
 import javax.swing.*;
 import java.awt.*;
