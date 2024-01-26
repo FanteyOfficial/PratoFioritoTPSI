@@ -73,7 +73,7 @@ public class MainMenu extends JFrame {
         setSize(400, 350);
         setResizable(false);
         getContentPane().setBackground(Color.decode("#3E92CC"));
-        setTitle("AimTrainerMenu");
+        setTitle("MineSweeperMenu");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         add(winTitle);

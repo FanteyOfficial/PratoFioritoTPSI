@@ -1,9 +1,12 @@
+package GameView;
+
 import java.util.Random;
 
 public class Game {
     char[][] table;
     int rows;
     int columns;
+
     public Game() {
         this.rows = 10;
         this.columns = 10;
@@ -31,7 +34,7 @@ public class Game {
         this.printTable();
     }
 
-    private void printTable() {
+    public void printTable() {
         for (int i = 0; i < table.length; i++) { //this equals to the row in our matrix.
             for (int j = 0; j < table[i].length; j++) { //this equals to the column in each row.
                 System.out.print(table[i][j] + " ");
@@ -52,8 +55,12 @@ public class Game {
         return count;
     }
 
-    private boolean checkMine(int x, int y) {
+    public boolean checkMine(int x, int y) {
         return table[x][y] == '@';
+    }
+
+    public char[][] getTable() {
+        return table;
     }
 
     public static void main(String[] args) {
