@@ -86,4 +86,31 @@ public class GameWindow extends JFrame{
 
         System.out.println(x + " " + y);
     }
+
+    public void deactivateAllButtons(JButton btn[][]) {
+        for (int i=0; i<btn.length; i++) {
+            for (int j=0; j<btn[i].length; j++) {
+                btn[i][j].setEnabled(false);
+            }
+        }
+    }
+
+    public void activateAllButtonNotClicked(JButton btn[][]) {
+        for (int i=0; i<btn.length; i++) {
+            for (int j=0; j<btn[i].length; j++) {
+                if (btn[i][j].getText().isEmpty()) {
+                    btn[i][j].setEnabled(true);
+                }
+            }
+        }
+    }
+
+    public void updateTable(int x, int y) {
+        this.table[x][y].setText(this.game.getTable()[x][y] + "");
+        this.table[x][y].setEnabled(false);
+    }
+
+    public JButton[][] getTable() {
+        return this.table;
+    }
 }
