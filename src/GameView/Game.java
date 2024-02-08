@@ -63,6 +63,7 @@ public class Game {
         return table;
     }
 
+
     public static void main(String[] args) {
         Game g = new Game();
         g.fillTable();

@@ -1,44 +1,48 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 public class Client {
-    private static final String SERVER_IP = "localhost";
-    private static final int SERVER_PORT = 9999;
+    private static final String SERVER_HOST = "localhost";
+    private static final int SERVER_PORT = 12345;
 
     public static void main(String[] args) {
         try {
-            Socket socket = new Socket(SERVER_IP, SERVER_PORT);
+            Socket socket = new Socket(SERVER_HOST, SERVER_PORT);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            // Inserisci il nome del giocatore
-            System.out.print("Inserisci il tuo nome: ");
-            BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
-            String playerName = userInput.readLine();
-            out.println(playerName);
+            Scanner scanner = new Scanner(System.in);
 
-            // Leggi e visualizza la classifica iniziale
-            String line;
-            while ((line = in.readLine()) != null && !line.isEmpty()) {
-                System.out.println(line);
-            }
+            System.out.println("Connected to server");
 
-            // Invia il punteggio al server
-            while (true) {
-                System.out.print("Inserisci il tuo punteggio (o 'exit' per uscire): ");
-                String scoreInput = userInput.readLine();
-
-                if (scoreInput.equalsIgnoreCase("exit")) {
-                    break;
+            Thread inputThread = new Thread(() -> {
+                try {
+                    String message;
+                    while ((message = in.readLine()) != null) {
+                        System.out.println("Received message: " + message);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+            });
+            inputThread.start();
 
-                out.println(scoreInput);
+            while (true) {
+                String message = in.readLine();
+                System.out.println("Received matrix: ");
+                System.out.println(message);
+
+                if (scanner.hasNextInt()) {
+                    int x = scanner.nextInt();
+                    int y = scanner.nextInt();
+                    if (clientHandler.checkCoordinates(x, y)) {
+                        System.out.println("You have hit a mine!");
+                        break;
+                    } else if (clientHandler.isWinner(x, y)) {
+                        System.out.println("Congratulations! You have won!");
+                        break;
+                    }
+                }
             }
-
-            socket.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
+        } catch (UnknownHostException e) { e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); } } }

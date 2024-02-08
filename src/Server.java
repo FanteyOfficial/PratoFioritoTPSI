@@ -1,88 +1,59 @@
 import java.io.*;
 import java.net.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Server {
-    private static final int PORT = 9999;
-    private static Map<String, Integer> scoreboard = new HashMap<>();
+    private static final int PORT = 12345;
+    private ServerSocket serverSocket;
+    private List<ClientHandler> clientHandlers;
 
-    public static void main(String[] args) {
+    public Server() {
         try {
-            ServerSocket serverSocket = new ServerSocket(PORT);
-            System.out.println("Server avviato sulla porta " + PORT);
+            serverSocket = new ServerSocket(PORT);
+            clientHandlers = new ArrayList<>();
+
+            System.out.println("Server listening on port " + PORT);
 
             while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Connessione accettata da " + clientSocket.getInetAddress());
+                Socket socket = serverSocket.accept();
+                System.out.println("Client connected: " + socket.getInetAddress());
 
-                // Creazione di un gestore client in un thread separato
-                new ClientHandler(clientSocket).start();
+                ClientHandler clientHandler = new ClientHandler(socket, this);
+                clientHandlers.add(clientHandler);
+                new Thread(clientHandler).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    // Classe per gestire le connessioni dei client in modo separato
-    private static class ClientHandler extends Thread {
-        private Socket clientSocket;
-        private BufferedReader in;
-        private PrintWriter out;
-
-        public ClientHandler(Socket socket) {
-            this.clientSocket = socket;
-            try {
-                this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                this.out = new PrintWriter(socket.getOutputStream(), true);
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void broadcast(String message, ClientHandler sender) {
+        sender.sendMessage(getMatrixAsString(sender.getGame().getTable()));
+        for (ClientHandler client : clientHandlers) {
+            if (client != sender) {
+                client.sendMessage(getMatrixAsString(client.getGame().getTable()));
             }
         }
+    }
 
-        @Override
-        public void run() {
-            try {
-                // Legge il nome del giocatore dal client
-                String playerName = in.readLine();
-                System.out.println("Nuovo giocatore: " + playerName);
-
-                // Invia la classifica attuale al client
-                sendScoreboard();
-
-                // Legge e aggiorna la classifica quando il client invia il punteggio
-                String scoreStr;
-                while ((scoreStr = in.readLine()) != null) {
-                    try {
-                        int score = Integer.parseInt(scoreStr);
-                        scoreboard.put(playerName, score);
-                        System.out.println("Aggiornamento punteggio per " + playerName + ": " + score);
-
-                        // Invia la classifica aggiornata a tutti i client
-                        sendScoreboard();
-                    } catch (NumberFormatException e) {
-                        System.err.println("Formato del punteggio non valido per " + playerName);
-                    }
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    clientSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    private String getMatrixAsString(char[][] table) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < table.length; i++) {
+            for (int j = 0; j < table[i].length; j++) {
+                sb.append(table[i][j]).append(" ");
             }
+            sb.append("\n");
         }
+        return sb.toString();
+    }
 
-        // Invia la classifica a tutti i client
-        private void sendScoreboard() {
-            out.println("Classifica attuale:");
-            for (Map.Entry<String, Integer> entry : scoreboard.entrySet()) {
-                out.println(entry.getKey() + ": " + entry.getValue());
-            }
-            out.println(); // Fine della classifica
-        }
+    public static void main(String[] args) {
+        new Server();
     }
 }
