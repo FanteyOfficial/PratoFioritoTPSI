@@ -1,3 +1,5 @@
+import GameView.Game;
+
 import java.io.*;
 import java.net.*;
 
@@ -11,6 +13,9 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(port);
         System.out.println("Server is listening on port " + port);
 
+        Game game = new Game();
+        game.fillTable();
+
         while (true) {
             Socket clientSocket = serverSocket.accept();
             System.out.println("New client connected");
@@ -19,7 +24,7 @@ public class Server {
             String clientName = "Client " + nextClientNumber++;
 
             // Create a new thread for handling the client's connection
-            new Thread(new ClientHandler(clientSocket, clientName)).start();
+            new Thread(new ClientHandler(clientSocket, clientName, game)).start();
         }
     }
 }

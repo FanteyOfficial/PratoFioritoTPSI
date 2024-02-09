@@ -69,6 +69,12 @@ public class Game {
     public static void main(String[] args) {
         Game g = new Game();
         g.fillTable();
+
+        // test tablehidden
+        g.hideTable();
+        g.revealTable(0, 0);
+        //g.printTableHidden();
+        System.out.println(g.getTableHiddenString());
     }
 
     public boolean isWinner() {
@@ -93,7 +99,7 @@ public class Game {
     public void hideTable() {
         for (int i=0; i<this.rows; i++) {
             for (int j=0; j<this.columns; j++) {
-                this.tableHidden[i][j] = ' ';
+                this.tableHidden[i][j] = 'X';
             }
         }
     }
@@ -104,5 +110,25 @@ public class Game {
 
     public void revealTable(int x, int y) {
         this.tableHidden[x][y] = this.table[x][y];
+    }
+
+    public void printTableHidden() {
+        for (int i = 0; i < tableHidden.length; i++) { //this equals to the row in our matrix.
+            for (int j = 0; j < tableHidden[i].length; j++) { //this equals to the column in each row.
+                System.out.print(tableHidden[i][j] + " ");
+            }
+            System.out.println(); //change line on console as row comes to end in the matrix.
+        }
+    }
+
+    public String getTableHiddenString() {
+        String s = "";
+        for (int i = 0; i < tableHidden.length; i++) { //this equals to the row in our matrix.
+            for (int j = 0; j < tableHidden[i].length; j++) { //this equals to the column in each row.
+                s += tableHidden[i][j] + " ";
+            }
+            s += "\n"; //change line on console as row comes to end in the matrix.
+        }
+        return s;
     }
 }

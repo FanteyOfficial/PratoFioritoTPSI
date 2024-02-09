@@ -22,7 +22,7 @@ public class Client {
             writer.println(line);
 
             String response = bufferedReader.readLine();
-            System.out.println("Received message from server: " + response);
+            System.out.println("Received message from server:\n" + response);
         }
 
         socket.close();
