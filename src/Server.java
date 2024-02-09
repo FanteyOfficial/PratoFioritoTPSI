@@ -1,59 +1,25 @@
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 public class Server {
-    private static final int PORT = 12345;
-    private ServerSocket serverSocket;
-    private List<ClientHandler> clientHandlers;
+    // Initialize the nextClientNumber variable to 0
+    private static int nextClientNumber = 0;
 
-    public Server() {
-        try {
-            serverSocket = new ServerSocket(PORT);
-            clientHandlers = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        int port = 6868; // Arbitrary port number
 
-            System.out.println("Server listening on port " + PORT);
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("Server is listening on port " + port);
 
-            while (true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("Client connected: " + socket.getInetAddress());
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("New client connected");
 
-                ClientHandler clientHandler = new ClientHandler(socket, this);
-                clientHandlers.add(clientHandler);
-                new Thread(clientHandler).start();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            // Assign a unique name to the client
+            String clientName = "Client " + nextClientNumber++;
+
+            // Create a new thread for handling the client's connection
+            new Thread(new ClientHandler(clientSocket, clientName)).start();
         }
-    }
-
-    public void broadcast(String message, ClientHandler sender) {
-        sender.sendMessage(getMatrixAsString(sender.getGame().getTable()));
-        for (ClientHandler client : clientHandlers) {
-            if (client != sender) {
-                client.sendMessage(getMatrixAsString(client.getGame().getTable()));
-            }
-        }
-    }
-
-    private String getMatrixAsString(char[][] table) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < table.length; i++) {
-            for (int j = 0; j < table[i].length; j++) {
-                sb.append(table[i][j]).append(" ");
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        new Server();
     }
 }

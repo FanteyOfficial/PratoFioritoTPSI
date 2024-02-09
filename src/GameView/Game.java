@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class Game {
     char[][] table;
+    char[][] tableHidden;
     int rows;
     int columns;
 
@@ -11,6 +12,7 @@ public class Game {
         this.rows = 10;
         this.columns = 10;
         this.table = new char[rows][columns];
+        this.tableHidden = new char[rows][columns];
     }
 
     public void fillTable() {
@@ -67,5 +69,40 @@ public class Game {
     public static void main(String[] args) {
         Game g = new Game();
         g.fillTable();
+    }
+
+    public boolean isWinner() {
+        for (int i=0; i<this.rows; i++) {
+            for (int j=0; j<this.columns; j++) {
+                if (this.table[i][j] != '@' && this.tableHidden[i][j] != this.table[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void revealTable() {
+        for (int i=0; i<this.rows; i++) {
+            for (int j=0; j<this.columns; j++) {
+                this.tableHidden[i][j] = this.table[i][j];
+            }
+        }
+    }
+
+    public void hideTable() {
+        for (int i=0; i<this.rows; i++) {
+            for (int j=0; j<this.columns; j++) {
+                this.tableHidden[i][j] = ' ';
+            }
+        }
+    }
+
+    public char[][] getTableHidden() {
+        return this.tableHidden;
+    }
+
+    public void revealTable(int x, int y) {
+        this.tableHidden[x][y] = this.table[x][y];
     }
 }

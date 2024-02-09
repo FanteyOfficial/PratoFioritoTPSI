@@ -1,57 +1,39 @@
-import GameView.Game;
-
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
 
+// ClientHandler class to handle the client's connection in a separate thread
 public class ClientHandler implements Runnable {
-    private Socket socket;
-    private Server server;
-    private BufferedReader in;
-    private PrintWriter out;
+    private Socket clientSocket;
+    private String clientName;
 
-    private Game game;
-
-    public ClientHandler(Socket socket, Server server) {
-        this.socket = socket;
-        this.server = server;
-        this.game = new Game();
+    public ClientHandler(Socket clientSocket, String clientName) {
+        this.clientSocket = clientSocket;
+        this.clientName = clientName;
     }
 
     @Override
     public void run() {
         try {
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+            InputStream input = clientSocket.getInputStream();
+            InputStreamReader reader = new InputStreamReader(input);
+            BufferedReader bufferedReader = new BufferedReader(reader);
 
-            String message;
-            while ((message = in.readLine()) != null) {
-                System.out.println("Received message: " + message);
-                server.broadcast(message, this);
+            OutputStream output = clientSocket.getOutputStream();
+            PrintWriter writer = new PrintWriter(output, true);
+
+            // Send a welcome message to the client with their assigned name
+            writer.println("Welcome, " + clientName + "! Type messages to send to the server.");
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(clientName + " sent: " + line);
+                writer.println("[" + clientName + "]: " + line);
             }
+
+            clientSocket.close();
+            System.out.println(clientName + " disconnected");
         } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Error handling client connection for " + clientName + ": " + e.getMessage());
         }
-    }
-
-    public void sendMessage(String message) {
-        out.println(message);
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public boolean checkCoordinates(int x, int y) {
-        return game.checkMine(x, y);
-    }
-
-    public boolean isWinner(int x, int y) {
-        return game.checkMine(x, y);
     }
 }
