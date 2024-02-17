@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PratoFioritoTPSI.iml" filepath="$PROJECT_DIR$/PratoFioritoTPSI.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/PratoFiorito.iml" filepath="$PROJECT_DIR$/.idea/PratoFiorito.iml" />
     </modules>
   </component>
 </project>
